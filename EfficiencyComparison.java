@@ -1,7 +1,7 @@
 import java.time.Duration;
 import java.time.Instant;
 
-public class test {
+public class EfficiencyComparison {
     
     public static void main(String[] args) {
         var time = Instant.now();
