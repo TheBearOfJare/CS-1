@@ -21,7 +21,7 @@ public class higherLower {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         
-        System.out.println("I'm thinking of a number from 0-10 (inclusive). Try to guess it :)");
+        System.out.println("I'm thinking of a number from 1-10 (inclusive). Try to guess it :)");
         //System.out.println(number);
 
         while (true) {
@@ -46,17 +46,17 @@ public class higherLower {
                     long guessNum = Long.parseLong(guess);
 
                     if (guessNum < number) {
-                        System.out.println("Higher...");
+                        System.out.println("\nHigher...");
 
                     }
                     else {
-                        System.out.println("Lower...");
+                        System.out.println("\nLower...");
                     }
                 } catch (Exception e) {
                     // the guess straight up isn't a number
     
-                    System.out.println("That's not even a number");
-                    break;
+                    System.out.println("\nThat's not even a number... Try again.");
+                    
                 }
     
             }
