@@ -5,6 +5,7 @@ public class SolveMatrix {
 
     public static int columns;
     public static int rows;
+    public static int count;
 
     static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -23,12 +24,12 @@ public class SolveMatrix {
     }
 
     // Ask the user to specify the data for a row
-    public static List<String> getARow(int columns) throws IOException {
-        List<String> row = new ArrayList<>(); 
+    public static List<Double> getARow(int columns) throws IOException {
+        List<Double> row = new ArrayList<>(); 
         System.out.println("\n");
         for (int i=1; i <= columns; i++) {
             System.out.print(" x"+i+": ");
-            row.add(reader.readLine());
+            row.add(Double.valueOf(reader.readLine()));
 
         }
         System.out.println("\n");
@@ -40,24 +41,25 @@ public class SolveMatrix {
     // TOOLS START HERE
 
     // Find the current column to work on (the one where there is more than one row with a non-zero entry)
-    public static int findCurrentColumn(List<String> matrix) {
+    public static int findCurrentColumn(List<List<Double>> matrix) {
 
+        System.out.println("\n\nFinding current column.");
         int currentColumn = 0;
-        List<String> row;
+        List<Double> row;
 
         for (int c  = 0; c < SolveMatrix.columns; c++) {
 
             // Count is a surprise tool that will help us later
-            int count = 0;
+            SolveMatrix.count = 0;
 
             for (int r = 0; r < SolveMatrix.rows; r++) {
 
-                // Convert the current row's string to an actual list to read from.
-                row = new ArrayList<>(Arrays.asList(matrix.get(r).toString().split(", ")));
+                // Get the current Row;
+                row = matrix.get(r);
 
                 // The value in the given column and row. Check if it's nonzero, and, if it is, up the count.
-                String entry = row.get(c).toString();
-                if (entry.equals("0")) {
+                double entry = row.get(c);
+                if (entry == 0) {
                     continue;
                 }
                 else {
@@ -81,56 +83,57 @@ public class SolveMatrix {
 
 
     // Determine if the matrix is in reduced row eschalon form
-    public static boolean isRREF(List<String> matrix) {
+    public static boolean isRREF(List<List<Double>> matrix) {
         return true;
     }
 
     // Pull out the solution from a RREF matrix and print it to the terminal.
-    public static void printSolution(List<String> matrix) {
+    public static void printSolution(List<List<Double>> matrix) {
         System.out.println(matrix);
     }
+
 
 
     // ELEMENTARY ROW OPPERATIONS START HERE
 
     // Scale a row to make the first nonzero digit 1
-    public static String scaleToOne(List<String> unscaledList) {
+    public static List<Double> scaleToOne(List<Double> unscaledList) {
         
         System.out.println("Scaling " + unscaledList + " to 1");
 
-        List<String> scaledRow = new ArrayList<>();
+        List<Double> scaledRow = new ArrayList<>(SolveMatrix.columns);
 
         // Divide each entry by the value of the first non-zero entry in the row
-        Long nonZeroVal = Long.valueOf(0);
+        Double nonZeroVal = Double.valueOf(0);
 
         for (int i = 0; i<unscaledList.size(); i++) {
 
             // Get the numerical value of the entry.
-            Long entry = Long.valueOf(unscaledList.get(i).toString());
+            Double entry = unscaledList.get(i);
 
             if (entry == 0) {
                 continue;
             }
             else if (entry == 1) {
-                nonZeroVal = Long.valueOf(1);
+                nonZeroVal = Double.valueOf(1);
                 break;
             }
             else {
-                nonZeroVal = Long.valueOf(entry);
+                nonZeroVal = entry;
                 break;
             }
         }
         
         // If the entry happens to already be a 1 just return the row, else, do the division of each entry.
         if (nonZeroVal == 1 || nonZeroVal == 0) {
-            return unscaledList.toString().substring(1,unscaledList.toString().length()-1);
+            return unscaledList;
         }
         else {
             System.out.println("Dividing each entry by " + nonZeroVal);
             for (int i = 0; i<unscaledList.size(); i++) {
                 
                 // We already have the first non-zero entry so we can just divide by that.
-                scaledRow.add(""+(Long.parseLong(unscaledList.get(i))/nonZeroVal));
+                scaledRow.add(unscaledList.get(i)/nonZeroVal);
 
             }
 
@@ -138,14 +141,33 @@ public class SolveMatrix {
         }
 
         
-        return scaledRow.toString().substring(1,scaledRow.toString().length()-1);
+        return scaledRow;
     }
 
 
     // Subtract a row from another row
 
-    // Swap two rows in the order
+    // Reorder the rows according to RREF
 
+    public static List<List<Double>> SortMatrix(List<List<Double>> unsortedMatrix, int currentColumn) {
+        List<List<Double>> sortedMatrix = new ArrayList<>(SolveMatrix.rows);
+
+        List<Double> kiddyPool;
+
+        for (int r = 0; r < SolveMatrix.rows; r++) {
+            if (sortedMatrix.get(r).get(currentColumn) != 0) {
+                kiddyPool = sortedMatrix.get(0);
+                sortedMatrix.set(0, sortedMatrix.get(r));
+                sortedMatrix.set(r, kiddyPool);
+
+            }
+
+        }
+        
+
+
+        return sortedMatrix;
+    }
 
 
 
@@ -161,33 +183,34 @@ public class SolveMatrix {
         int columns = getcolumns();
 
         // Get the matrix data
-        List<String> matrix = new ArrayList<>();
+        List<List<Double>> matrix = new ArrayList<>();
+
         while (matrix.size() < rows) {
-            String row = getARow(columns).toString();
-            matrix.add(row.substring(1, row.length()-1));
+            List<Double> row = getARow(columns);
+            matrix.add(row);
         }
 
         // Solve the matrix starting here
 
         // The solving loop
         while (true) {
-
-            // Check the rows and reorder them if nessisary until rows with nonzero values for x1 are on top and then values for x2 and so on.
-
-            // Scale each row until its leading value is 1
-            List<String> row;
-            for (int i = 0; i < matrix.size(); i++) {
-
-                // Make a list out of the data in the matrix.
-                row = new ArrayList<>(Arrays.asList(matrix.get(i).toString().split(", ")));
-
-                // Add it to the row.
-                matrix.set(i,scaleToOne(row));
-            }
-
             // Find which row we need to work on by finding the first column where two or more rows have a non-zero value. Remember the column for later
 
             int currentColumn = findCurrentColumn(matrix);
+
+            // Check the rows and reorder them if nessisary until rows with nonzero values for the current column of interest are on top of those with 0 values in that column.
+            matrix = SortMatrix(matrix, currentColumn);
+
+            // Scale each row until its leading value is 1
+            List<Double> row;
+            for (int i = 0; i < matrix.size(); i++) {
+
+                // Select the row
+                row = matrix.get(i);
+
+                // Replace that entry with the scaled version
+                matrix.set(i,scaleToOne(row));
+            }
 
             // Working in the current column, find the last row that has a non-zero and mark it as the subtrahand.
 
