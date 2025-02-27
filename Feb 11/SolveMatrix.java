@@ -6,6 +6,7 @@ public class SolveMatrix {
     public static int columns;
     public static int rows;
     public static int count;
+    public static int currentColumn;
 
     static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -26,7 +27,6 @@ public class SolveMatrix {
     // Ask the user to specify the data for a row
     public static List<Double> getARow(int columns) throws IOException {
         List<Double> row = new ArrayList<>(); 
-        System.out.println("\n");
         for (int i=1; i <= columns; i++) {
             System.out.print(" x"+i+": ");
             row.add(Double.valueOf(reader.readLine()));
@@ -43,8 +43,8 @@ public class SolveMatrix {
     // Find the current column to work on (the one where there is more than one row with a non-zero entry)
     public static int findCurrentColumn(List<List<Double>> matrix) {
 
-        System.out.println("\n\nFinding current column.");
-        int currentColumn = 0;
+        System.out.println("\nFinding current column.");
+        SolveMatrix.currentColumn = 0;
         List<Double> row;
 
         for (int c  = 0; c < SolveMatrix.columns; c++) {
@@ -63,7 +63,7 @@ public class SolveMatrix {
                     continue;
                 }
                 else {
-                    count ++;
+                    SolveMatrix.count ++;
                 }
 
                 
@@ -71,8 +71,8 @@ public class SolveMatrix {
 
             // We're looking for the first column where the count is greater than 1. When we find it we can stop searching immediately. The current value of int count will be very handy in the next step.
 
-            if (count > 1) {
-                currentColumn = c;
+            if (SolveMatrix.count > 1) {
+                SolveMatrix.currentColumn = c;
                 break;
             }
             
@@ -81,10 +81,37 @@ public class SolveMatrix {
         return currentColumn;
     }
 
+    public static int findSubtrahand(List<List<Double>> matrix) {
+        int index = SolveMatrix.rows - 1;
+        while (index >= 0) {
+
+            if (matrix.get(index).get(currentColumn) != 0) {
+                break;
+            }
+
+            index--;
+        }
+
+        return index;
+    }
 
     // Determine if the matrix is in reduced row eschalon form
     public static boolean isRREF(List<List<Double>> matrix) {
+        
+        for (int r = 0; r < SolveMatrix.rows - 1; r++) {
+            for (int c = 0; c < SolveMatrix.columns - 2; c++) {
+                if (matrix.get(r).get(c) != 0) {
+
+                    if (c != r || matrix.get(r).get(c) != 1){
+                        return false;
+                    }
+
+                }
+            }
+        }
+
         return true;
+
     }
 
     // Pull out the solution from a RREF matrix and print it to the terminal.
@@ -147,24 +174,67 @@ public class SolveMatrix {
 
     // Subtract a row from another row
 
-    // Reorder the rows according to RREF
+    public static List<List<Double>> subtractRow(List<List<Double>> originalMatrix, int subtrahand) {
 
-    public static List<List<Double>> SortMatrix(List<List<Double>> unsortedMatrix, int currentColumn) {
-        List<List<Double>> sortedMatrix = new ArrayList<>(SolveMatrix.rows);
+        List<List<Double>> modifiedMatrix = originalMatrix;
 
-        List<Double> kiddyPool;
+        List<Double> subtraRow = originalMatrix.get(subtrahand);
 
-        for (int r = 0; r < SolveMatrix.rows; r++) {
-            if (sortedMatrix.get(r).get(currentColumn) != 0) {
-                kiddyPool = sortedMatrix.get(0);
-                sortedMatrix.set(0, sortedMatrix.get(r));
-                sortedMatrix.set(r, kiddyPool);
+        int row = subtrahand - 1;
 
+        while (row >= 0)  {
+
+            // Skip rows that are already empty in the current column
+            if (originalMatrix.get(row).get(SolveMatrix.currentColumn) == 0) {
+                continue;
+            }
+            else {
+
+                // Subtract each element of the subtraRow from each element of the current row that we're working with.
+                List<Double> difference = originalMatrix.get(row);
+                double factor = originalMatrix.get(row).get(SolveMatrix.currentColumn);
+
+                System.out.println("Subtracting row " + subtrahand + " (" + subtraRow + ")" + " from " + difference);
+                for (int c = 0; c < difference.size(); c++) {
+
+                    
+                    difference.set(c, difference.get(c) - (subtraRow.get(c) * factor) );
+                    
+                }
+
+                modifiedMatrix.set(row, difference);
             }
 
+
+            row--;
         }
         
 
+        return modifiedMatrix;
+    }
+
+    // Reorder the rows according to RREF
+
+    public static List<List<Double>> sortMatrix(List<List<Double>> unsortedMatrix) {
+        List<List<Double>> sortedMatrix = new ArrayList<>(SolveMatrix.rows);
+
+        //List<Double> kiddyPool;
+
+        for (int c = 0; c < SolveMatrix.columns; c++) {
+            int r = 0;
+            while (r < unsortedMatrix.size()) {
+                if (unsortedMatrix.get(r).get(c) != 0) {
+                    sortedMatrix.add(unsortedMatrix.get(r));
+                    unsortedMatrix.remove(r);
+    
+                }
+                else {
+                    r++;
+                }
+    
+            }
+        }
+        
 
         return sortedMatrix;
     }
@@ -194,12 +264,14 @@ public class SolveMatrix {
 
         // The solving loop
         while (true) {
+            
             // Find which row we need to work on by finding the first column where two or more rows have a non-zero value. Remember the column for later
 
             int currentColumn = findCurrentColumn(matrix);
 
-            // Check the rows and reorder them if nessisary until rows with nonzero values for the current column of interest are on top of those with 0 values in that column.
-            matrix = SortMatrix(matrix, currentColumn);
+            // Check the rows and reorder them if nessisary until the matrix is sorted as close to RREF as possible.
+            System.out.println("\nScaling matrix");
+            matrix = sortMatrix(matrix);
 
             // Scale each row until its leading value is 1
             List<Double> row;
@@ -210,13 +282,21 @@ public class SolveMatrix {
 
                 // Replace that entry with the scaled version
                 matrix.set(i,scaleToOne(row));
+                
             }
+            System.out.println("New scaled matrix: " + matrix);
 
-            // Working in the current column, find the last row that has a non-zero and mark it as the subtrahand.
+            // Working in the current column, find the last row that has a non-zero and save its index as the subtrahand.
 
-            int subtrahand;
+            int subtrahand = findSubtrahand(matrix);
 
             // Subtract the subtrahand row from each row above it.
+
+            matrix = subtractRow(matrix, subtrahand);
+
+            // Sort the matrix again before checking RREF
+
+            matrix = sortMatrix(matrix);
 
             // Check if the matrix is in reduced row eschalon form. If so, run the printout.
             if (isRREF(matrix)) {
