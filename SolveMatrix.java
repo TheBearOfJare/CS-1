@@ -246,7 +246,7 @@ public class SolveMatrix {
 
 
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, InterruptedException {
 
         // Set up the matrix
         int rows = getRows();
@@ -260,9 +260,12 @@ public class SolveMatrix {
             matrix.add(row);
         }
 
+        List<List<Double>> oldMatrix = new ArrayList<>();
+
         // Solve the matrix starting here
 
         // The solving loop
+
         while (true) {
             
             // Find which row we need to work on by finding the first column where two or more rows have a non-zero value. Remember the column for later
@@ -299,13 +302,18 @@ public class SolveMatrix {
             matrix = sortMatrix(matrix);
 
             // Check if the matrix is in reduced row eschalon form. If so, run the printout.
-            if (isRREF(matrix)) {
-                printSolution(matrix);
-                break;
-            }
+            // if (isRREF(matrix)) {
+            //     printSolution(matrix);
+            //     break;
+            // }
+
+            printSolution(matrix);
+            
+            Thread.sleep(10000);
 
 
         }
+
 
 
     }
