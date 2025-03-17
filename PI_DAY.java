@@ -32,28 +32,79 @@ public class PI_DAY {
         //System.out.println(b.compareTo(BigDecimal.valueOf(2)));
         if (b.compareTo(a.add(BigDecimal.valueOf(1))) != 0) {
 
+            
+
             // make a new b value, using binary weirdness and begin recursion. This is the thing that will eventually return the answer, since b is almost certainly not when we start.
-            BigDecimal m = a.add(b, depth).divide(BigDecimal.valueOf(2), depth).setScale(0, RoundingMode.FLOOR); // (a + b) / 2 and then floored
+            
+            double da = a.doubleValue();
+            double db = b.doubleValue();
+
+            BigDecimal m = BigDecimal.valueOf(Math.floor((da+db)/2));
+            
+            //BigDecimal m = a.add(b, depth).divide(BigDecimal.valueOf(2), depth).setScale(0, RoundingMode.FLOOR); // (a + b) / 2 and then floored
             //System.out.println("a: "+a+"\n"+"b: "+b);
             //System.out.println(m);
             List<BigDecimal> a_set = chudnovskify(a, m, depth);
             List<BigDecimal> b_set = chudnovskify(m, b, depth);
             
-            BigDecimal Pam = a_set.get(0);
-            BigDecimal Qam = a_set.get(1);
-            BigDecimal Ram = a_set.get(2);
+            // try to use longs but if it doesn't work, use big decimals
 
-            BigDecimal Pmb = b_set.get(0);
-            BigDecimal Qmb = b_set.get(1);
-            BigDecimal Rmb = b_set.get(2);
+            // BigDecimal Qam = a_set.get(1);
+            // BigDecimal Ram = a_set.get(2);
+            
 
-            BigDecimal Pab = Pam.multiply(Pmb, depth);
-            BigDecimal Qab = Qam.multiply(Qmb, depth);
-            BigDecimal Rab = Qmb.multiply(Ram, depth).add(Pam.multiply(Rmb, depth), depth);
+            // BigDecimal Qmb = b_set.get(1);
+            // BigDecimal Rmb = b_set.get(2);
+
+            BigDecimal Pab = null;
+            BigDecimal Qab = null;
+            BigDecimal Rab = null;
+
+            try {
+                long Paml = a_set.get(0).longValueExact();
+                long Pmbl = b_set.get(0).longValueExact();
+
+                Pab = BigDecimal.valueOf(Paml*Pmbl);
+
+            }
+            catch (Exception e) {
+                BigDecimal Pam = a_set.get(0);
+                BigDecimal Pmb = b_set.get(0);
+
+                Pab = Pam.multiply(Pmb, depth);
+                
+            }
+            try {
+                long Qaml = a_set.get(1).longValueExact();
+                long Qmbl = b_set.get(1).longValueExact();
+
+                Qab = BigDecimal.valueOf(Qaml*Qmbl);
+            }
+            catch (Exception e) {
+                BigDecimal Qam = a_set.get(1);
+                BigDecimal Qmb = b_set.get(1);
+
+                Qab = Qam.multiply(Qmb, depth);
+            }
+            try {
+                long Paml = a_set.get(0).longValueExact();
+                long Qmbl = b_set.get(1).longValueExact();
+                long Raml = a_set.get(2).longValueExact();
+                long Rmbl = b_set.get(2).longValueExact();
+
+                Rab = BigDecimal.valueOf((long) ((Qmbl*Raml) + (Paml*Rmbl)));
+            }
+            catch (Exception e) {
+                BigDecimal Pam = a_set.get(0);
+                BigDecimal Qmb = b_set.get(1);
+                BigDecimal Ram = a_set.get(2);
+                BigDecimal Rmb = b_set.get(2);
+
+                Rab = Qmb.multiply(Ram, depth).add(Pam.multiply(Rmb, depth), depth);
+            }
 
             List<BigDecimal> output = new ArrayList<>();
             
-
             output.add(Pab);
             output.add(Qab);
             output.add(Rab);
