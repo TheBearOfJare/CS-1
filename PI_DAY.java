@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-public class PI_DAY {
+public class PI_DAY  {
 
     static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -64,7 +64,11 @@ public class PI_DAY {
                 long Paml = a_set.get(0).longValueExact();
                 long Pmbl = b_set.get(0).longValueExact();
 
-                Pab = BigDecimal.valueOf(Paml*Pmbl);
+                Pab = BigDecimal.valueOf(Paml*Pmbl).round(depth);
+
+                // if (Pab.compareTo(BigDecimal.valueOf(0)) == 0) {
+                //     throw new Exception();
+                // }
 
             }
             catch (Exception e) {
@@ -78,7 +82,11 @@ public class PI_DAY {
                 long Qaml = a_set.get(1).longValueExact();
                 long Qmbl = b_set.get(1).longValueExact();
 
-                Qab = BigDecimal.valueOf(Qaml*Qmbl);
+                Qab = BigDecimal.valueOf(Qaml*Qmbl).round(depth);
+
+                if (Qab.compareTo(BigDecimal.valueOf(0)) == 0) {
+                    throw new Exception("too big");
+                }
             }
             catch (Exception e) {
                 BigDecimal Qam = a_set.get(1);
@@ -87,12 +95,17 @@ public class PI_DAY {
                 Qab = Qam.multiply(Qmb, depth);
             }
             try {
+                
                 long Paml = a_set.get(0).longValueExact();
                 long Qmbl = b_set.get(1).longValueExact();
                 long Raml = a_set.get(2).longValueExact();
                 long Rmbl = b_set.get(2).longValueExact();
 
-                Rab = BigDecimal.valueOf((long) ((Qmbl*Raml) + (Paml*Rmbl)));
+                Rab = BigDecimal.valueOf((long) ((Qmbl*Raml) + (Paml*Rmbl))).round(depth);
+
+                if (Rab.compareTo(BigDecimal.valueOf(0)) == 0) {
+                    throw new Exception();
+                }
             }
             catch (Exception e) {
                 BigDecimal Pam = a_set.get(0);
@@ -105,10 +118,15 @@ public class PI_DAY {
 
             List<BigDecimal> output = new ArrayList<>();
             
+            
             output.add(Pab);
             output.add(Qab);
             output.add(Rab);
-            //System.out.println(output);
+
+            if (output.get(1).compareTo(BigDecimal.valueOf(0)) == 0) {
+                System.out.println(output.get(1));
+            }
+            
             
             //progress.completed++;
             
