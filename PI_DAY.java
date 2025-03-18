@@ -46,74 +46,17 @@ public class PI_DAY  {
             List<BigDecimal> a_set = chudnovskify(a, m, depth);
             List<BigDecimal> b_set = chudnovskify(m, b, depth);
             
-            // try to use longs but if it doesn't work, use big decimals
+            BigDecimal Pam = a_set.get(0);
+            BigDecimal Qam = a_set.get(1);
+            BigDecimal Ram = a_set.get(2);
 
-            // BigDecimal Qam = a_set.get(1);
-            // BigDecimal Ram = a_set.get(2);
-            
+            BigDecimal Pmb = b_set.get(0);
+            BigDecimal Qmb = b_set.get(1);
+            BigDecimal Rmb = b_set.get(2);
 
-            // BigDecimal Qmb = b_set.get(1);
-            // BigDecimal Rmb = b_set.get(2);
-
-            BigDecimal Pab = null;
-            BigDecimal Qab = null;
-            BigDecimal Rab = null;
-
-            try {
-                long Paml = a_set.get(0).longValueExact();
-                long Pmbl = b_set.get(0).longValueExact();
-
-                Pab = BigDecimal.valueOf(Paml*Pmbl).round(depth);
-
-                // if (Pab.compareTo(BigDecimal.valueOf(0)) == 0) {
-                //     throw new Exception();
-                // }
-
-            }
-            catch (Exception e) {
-                BigDecimal Pam = a_set.get(0);
-                BigDecimal Pmb = b_set.get(0);
-
-                Pab = Pam.multiply(Pmb, depth);
-                
-            }
-            try {
-                long Qaml = a_set.get(1).longValueExact();
-                long Qmbl = b_set.get(1).longValueExact();
-
-                Qab = BigDecimal.valueOf(Qaml*Qmbl).round(depth);
-
-                if (Qab.compareTo(BigDecimal.valueOf(0)) == 0) {
-                    throw new Exception("too big");
-                }
-            }
-            catch (Exception e) {
-                BigDecimal Qam = a_set.get(1);
-                BigDecimal Qmb = b_set.get(1);
-
-                Qab = Qam.multiply(Qmb, depth);
-            }
-            try {
-                
-                long Paml = a_set.get(0).longValueExact();
-                long Qmbl = b_set.get(1).longValueExact();
-                long Raml = a_set.get(2).longValueExact();
-                long Rmbl = b_set.get(2).longValueExact();
-
-                Rab = BigDecimal.valueOf((long) ((Qmbl*Raml) + (Paml*Rmbl))).round(depth);
-
-                if (Rab.compareTo(BigDecimal.valueOf(0)) == 0) {
-                    throw new Exception("too big");
-                }
-            }
-            catch (Exception e) {
-                BigDecimal Pam = a_set.get(0);
-                BigDecimal Qmb = b_set.get(1);
-                BigDecimal Ram = a_set.get(2);
-                BigDecimal Rmb = b_set.get(2);
-
-                Rab = Qmb.multiply(Ram, depth).add(Pam.multiply(Rmb, depth), depth);
-            }
+            BigDecimal Pab = Pam.multiply(Pmb, depth);
+            BigDecimal Qab = Qam.multiply(Qmb, depth);
+            BigDecimal Rab = Qmb.multiply(Ram, depth).add(Pam.multiply(Rmb, depth), depth);
 
             List<BigDecimal> output = new ArrayList<>();
             

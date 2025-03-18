@@ -24,7 +24,7 @@ public class piChecker {
         
         // read PI_ACTUAL.txt
         String pi = readFile("PI_ACTUAL.txt");
-        String pi_calculated = readFile("PI_10M.txt");
+        String pi_calculated = readFile("PI_0.1M.txt");
 
         for (int i = 0; i < pi_calculated.length(); i++) {
             if (!pi_calculated.substring(i, i+1).equals(pi.substring(i, i+1))) {
