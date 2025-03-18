@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 
 public class PI_DAY  {
 
@@ -104,7 +103,7 @@ public class PI_DAY  {
                 Rab = BigDecimal.valueOf((long) ((Qmbl*Raml) + (Paml*Rmbl))).round(depth);
 
                 if (Rab.compareTo(BigDecimal.valueOf(0)) == 0) {
-                    throw new Exception();
+                    throw new Exception("too big");
                 }
             }
             catch (Exception e) {
