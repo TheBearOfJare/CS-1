@@ -122,9 +122,9 @@ public class PI_DAY  {
             output.add(Qab);
             output.add(Rab);
 
-            if (output.get(1).compareTo(BigDecimal.valueOf(0)) == 0) {
-                System.out.println(output.get(1));
-            }
+            // if (output.get(1).compareTo(BigDecimal.valueOf(0)) == 0) {
+            //     System.out.println(output.get(1));
+            // }
             
             
             //progress.completed++;
