@@ -14,11 +14,7 @@ public class PI_DAY  {
 
     public static void save(BigDecimal output, String name) throws FileNotFoundException, UnsupportedEncodingException {
         PrintWriter writer = new PrintWriter(name, "UTF-8");
-
-        writer.write(output.toPlainString());
-
-        writer.close();
-
+        writer.write(output.toPlainString()); writer.close();
     }
     
     public static List<BigDecimal> chudnovskify (BigDecimal a, BigDecimal b, MathContext depth) {
@@ -31,28 +27,20 @@ public class PI_DAY  {
         //System.out.println(b.compareTo(BigDecimal.valueOf(2)));
         if (b.compareTo(a.add(BigDecimal.valueOf(1))) != 0) {
 
-            
-
             // make a new b value, using binary weirdness and begin recursion. This is the thing that will eventually return the answer, since b is almost certainly not when we start.
             
-            double da = a.doubleValue();
-            double db = b.doubleValue();
+            double da = a.doubleValue(); double db = b.doubleValue();
 
             BigDecimal m = BigDecimal.valueOf(Math.floor((da+db)/2));
             
             //BigDecimal m = a.add(b, depth).divide(BigDecimal.valueOf(2), depth).setScale(0, RoundingMode.FLOOR); // (a + b) / 2 and then floored
             //System.out.println("a: "+a+"\n"+"b: "+b);
             //System.out.println(m);
-            List<BigDecimal> a_set = chudnovskify(a, m, depth);
-            List<BigDecimal> b_set = chudnovskify(m, b, depth);
-            
-            BigDecimal Pam = a_set.get(0);
-            BigDecimal Qam = a_set.get(1);
-            BigDecimal Ram = a_set.get(2);
 
-            BigDecimal Pmb = b_set.get(0);
-            BigDecimal Qmb = b_set.get(1);
-            BigDecimal Rmb = b_set.get(2);
+            List<BigDecimal> a_set = chudnovskify(a, m, depth); List<BigDecimal> b_set = chudnovskify(m, b, depth);
+            
+            BigDecimal Pam = a_set.get(0); BigDecimal Qam = a_set.get(1); BigDecimal Ram = a_set.get(2);
+            BigDecimal Pmb = b_set.get(0); BigDecimal Qmb = b_set.get(1); BigDecimal Rmb = b_set.get(2);
 
             BigDecimal Pab = Pam.multiply(Pmb, depth);
             BigDecimal Qab = Qam.multiply(Qmb, depth);
@@ -61,9 +49,7 @@ public class PI_DAY  {
             List<BigDecimal> output = new ArrayList<>();
             
             
-            output.add(Pab);
-            output.add(Qab);
-            output.add(Rab);
+            output.add(Pab); output.add(Qab); output.add(Rab);
 
             // if (output.get(1).compareTo(BigDecimal.valueOf(0)) == 0) {
             //     System.out.println(output.get(1));
@@ -76,18 +62,13 @@ public class PI_DAY  {
         }
         else {
 
-            // now that b is a + 1 we can do the real math, and then pass this value through a ton of the recursed chudnovskify methods where they will do their a b binary shenanigans.
+            // now that b is a + 1 we can do the real math, and then pass this value through a ton of the recursed chudnovskify methods where they will do their a b binary split shenanigans.
             BigDecimal Pab = (a.multiply(BigDecimal.valueOf(6), depth).subtract(BigDecimal.valueOf(5), depth)).multiply(a.multiply(BigDecimal.valueOf(2), depth).subtract(BigDecimal.valueOf(1), depth), depth).multiply(a.multiply(BigDecimal.valueOf(6), depth).subtract(BigDecimal.valueOf(1), depth), depth).negate();
-        
             BigDecimal Qab = a.pow(3, depth).multiply(BigDecimal.valueOf(10939058860032000l), depth);
-            
             BigDecimal Rab = Pab.multiply(a.multiply(BigDecimal.valueOf(545140134), depth).add(BigDecimal.valueOf(13591409), depth), depth);
 
             List<BigDecimal> output = new ArrayList<>();
-            
-            output.add(Pab);
-            output.add(Qab);
-            output.add(Rab);
+            output.add(Pab); output.add(Qab); output.add(Rab);
 
             //progress.completed++;
             //progress.percentage = (float)progress.completed/(float)progress.total;
@@ -119,26 +100,19 @@ public class PI_DAY  {
         String input = reader.readLine();
 
         // time the calculation
-        long start = System.currentTimeMillis();
-
-        int mdigits = (int) (Double.parseDouble(input) * 1000000);
-        //int mdigits = 4;
-
+        long start = System.currentTimeMillis(); 
+        
         // set the number of digits
-        MathContext depth = new MathContext(mdigits);
-        BigDecimal n = new BigDecimal(mdigits, depth);
+        int mdigits = (int) (Double.parseDouble(input) * 1000000); MathContext depth = new MathContext(mdigits); BigDecimal n = new BigDecimal(mdigits, depth);
 
         // calculate PI
         BigDecimal PI = chudnovsky(n.multiply(BigDecimal.valueOf(1)), depth);
-
         System.out.println("Time to calculate: " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
-
+        
         // save the result
+        start = System.currentTimeMillis();
         save(PI, "PI_"+input+"M.txt");
-
         System.out.println("Time to save: " + (System.currentTimeMillis() - start) + "ms");
-
         System.out.println("Finished.");
         //System.out.println(PI);
 
