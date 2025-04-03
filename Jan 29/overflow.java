@@ -10,7 +10,7 @@ public class overflow {
 
         while ((short)x != 0) {
             x++;
-            System.out.println((short)x);
+            System.out.println((short)x+"\r");
         }
         var end = Instant.now();
         System.out.print("Back to 0 in: ");

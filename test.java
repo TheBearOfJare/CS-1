@@ -12,7 +12,8 @@ public class test {
 
     public static void main(String[] args) throws IOException {
 
-        
-        
+        List<Integer> list = new ArrayList<>();
+        Collections.addAll(list, 1, 2, 3, 4, 5);
+
     }
 }
